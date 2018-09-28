@@ -1,35 +1,42 @@
 -- Namespace
 BlocksPerSecond = {}
 BlocksPerSecond.name = "BlocksPerSecond"
-BlocksPerSecond.inCombat = IsUnitInCombat("player") --Bool of whether player is in combat or not
 BlocksPerSecond.blockCounter = 0
  
 -- Initialization
 function BlocksPerSecond:Initialize()
-	--Calls OnCombatStart when player's combat state changes
-	EVENT_MANAGER:RegisterForEvent(BlocksPerSecond.name, EVENT_PLAYER_COMBAT_STATE, BlocksPerSecond.OnCombatStart)
+	--Bool of whether player is in combat or not
+	BlocksPerSecond.inCombat = IsUnitInCombat("player")
+	--Event manager for combat state changing
+	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, self.OnPlayerCombatState)
 end
  
- --Main loop
- function BlocksPerSecond:OnCombatStart()
-	local timems = GetGameTimeMilliseconds()
-	if BlocksPerSecond.inCombat == true then
+ --Called when combat state changes
+ function BlocksPerSecond:OnPlayerCombatState(event, inCombat)
+	local BlocksPerSecond.CurrentFight = {} --Initializes a new object to hold current fights data
+	CurrentFight.timems = GetGameTimeMilliseconds()
+	--Check if players combat state has changed
+	if inCombat ~= BlocksPerSecond.inCombat then
+		BlocksPerSecond.inCombat = inCombat
+	end
+	
+	if inCombat then
 		--Starts the timer when combat starts
-		local combatStart = timems
+		CurrentFight.combatStart = CurrentFight.timems
 		--Event Manager for when block
 		EVENT_MANAGER:RegisterForEvent(BlocksPerSecond.name, EVENT_COMBAT_EVENT, BlocksPerSecond.IncrementBlock)
-		--Displays blockCounter/timer
 	else
 		--Ends timer when combat ends
-		local combatEnd = timems
+		CurrentFight.combatEnd = CurrentFight.timems
 	end
  end
  
  function BlocksPerSecond:IncrementBlock(eventCode,result,isError,abilityName,abilityGraphic,abilityActionSlotType,sourceName,sourceType,targetName,targetType,hitValue,powerType,damageType,combatEventLog,sourceUnitId,targetUnitId,abilityId)
 	--Triggers if the result was blocked by player
-	if result == ACTION_RESULT_BLOCKED then
+	if result == ACTION_RESULT_BLOCKED_DAMAGE then
 		if targetName == "player" then
 			BlocksPerSecond.blockCounter = BlocksPerSecond.blockCounter + 1
+			d("Block")
 		end
 	end
  end
