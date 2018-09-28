@@ -13,7 +13,7 @@ end
  --Main loop
  function BlocksPerSecond:OnCombatStart()
 	local timems = GetGameTimeMilliseconds()
-	if BlocksPerSecond.inCombat == true
+	if BlocksPerSecond.inCombat == true then
 		--Starts the timer when combat starts
 		local combatStart = timems
 		--Event Manager for when block
@@ -27,8 +27,8 @@ end
  
  function BlocksPerSecond:IncrementBlock(eventCode,result,isError,abilityName,abilityGraphic,abilityActionSlotType,sourceName,sourceType,targetName,targetType,hitValue,powerType,damageType,combatEventLog,sourceUnitId,targetUnitId,abilityId)
 	--Triggers if the result was blocked by player
-	if result == ACTION_RESULT_BLOCKED
-		if targetName == "player"
+	if result == ACTION_RESULT_BLOCKED then
+		if targetName == "player" then
 			BlocksPerSecond.blockCounter = BlocksPerSecond.blockCounter + 1
 		end
 	end
