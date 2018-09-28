@@ -1,0 +1,1 @@
+ESO Addon that tracks the average blocks per second during combat.
